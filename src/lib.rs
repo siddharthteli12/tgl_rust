@@ -1,4 +1,6 @@
-#[derive(Debug, Eq)]
+use std::cmp::Ordering;
+
+#[derive(Debug)]
 pub struct Person {
     pub uid: u64,
     pub name: String,
@@ -85,6 +87,48 @@ impl PartialEq for Person {
     }
     fn ne(&self, other: &Self) -> bool {
         self.uid != other.uid
+    }
+}
+
+// Eq trait impl for Person
+// Now, Person can act as keys in HashMap, which as to impl Eq trait.
+impl Eq for Person {}
+
+// PartialOrd trait impl for Person
+// This trait returns option & is impl for types where sometimes comparsion might make no sense
+// resulting in returning none.
+// PartialEq trait impl for Person
+/// # Examples
+/// ```
+/// use tgl_rust::Person;
+/// # fn main() {
+/// let person = Person::default();
+/// let person2 = Person::build(10, "Sid".to_string(), 10, 120);
+/// assert!(person2 > person);
+/// }
+/// ```
+impl PartialOrd for Person {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.uid.cmp(&other.uid))
+    }
+}
+
+// Ord trait impl for Person
+// This trait provides methods like max, min & clamp, which is used to restrict value to certain interval.
+// Eq, ParitalOrd should be impl for Ord trait.
+/// # Examples
+/// ```
+/// use tgl_rust::Person;
+/// # fn main() {
+/// let person = Person::default();
+/// let person2 = Person::build(10, "Sid".to_string(), 10, 120);
+/// assert_eq!(person.clone().max(person2.clone()), person2.clone());
+/// assert_eq!(person.clone().min(person2.clone()), person.clone());
+/// }
+/// ```
+impl Ord for Person {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.uid.cmp(&other.uid)
     }
 }
 
